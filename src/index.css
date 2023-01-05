@@ -11,3 +11,51 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.App {
+  min-height: 100vh;
+}
+
+.upload-container {
+  position: relative;
+  min-height: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group .input {
+  border: 1px solid #92b0b3;
+  background: #f1f1f1;
+  outline: 2px dashed #92b0b3;
+  outline-offset: -10px;
+  padding: 100px 125px;
+  text-align: center;
+  width: 500px;
+}
+
+.input-group .input:hover {
+  background: #ddd;
+}
+
+.input-group .text {
+  position: absolute;
+  top: 65%;
+  left: 250px;
+  color: #3f8188;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.input-group .text.-draging {
+  font-size: 60px;
+  top: 65px;
+}
+
+.upload-btn {
+  padding: 10px 20px;
+}
