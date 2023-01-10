@@ -36,18 +36,18 @@ export default function App() {
         const resizeWidth = 1024;
 
         canvas.width = resizeWidth
-        canvas.height = resizeWidth * ratio
+        canvas.height = resizeWidth / ratio
 
         // step 1 - resize to 50%
         oc.width = resizeWidth;
-        oc.height = resizeWidth * ratio;
+        oc.height = resizeWidth / ratio;
         octx.drawImage(imageElement, 0, 0, oc.width, oc.height);
 
         // step 2
-        octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
+        octx.drawImage(oc, 0, 0, oc.width, oc.height);
 
         // step 3, resize to final size
-        ctx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5,
+        ctx.drawImage(oc, 0, 0, oc.width, oc.height,
           0, 0, canvas.width, canvas.height);
 
         canvas.toBlob(
