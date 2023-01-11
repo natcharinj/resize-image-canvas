@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import './App.css';
 import 'react-toastify/dist/ReactToastify.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 
 export default function App() {
-  const [IsDraging, setIsDraging] = useState(false)
 
+  const refDragArea = useRef();
+  const refText = useRef();
+  const inputFile = useRef();
+  const buttonRef = useRef();
+  const iconRef = useRef();
 
   // https://github.com/LuanEdCosta/copy-image-clipboard/blob/master/src/index.ts
   const createImageElement = async (imageSource) => {
@@ -33,7 +39,7 @@ export default function App() {
       if (ctx) {
         const { width, height } = imageElement
         const ratio = width / height;
-        const resizeWidth = 1024;
+        const resizeWidth = width < 1024 ? width : 1024;
 
         canvas.width = resizeWidth
         canvas.height = resizeWidth / ratio
@@ -92,14 +98,17 @@ export default function App() {
 
   const uploadFiles = (e) => {
     const { files } = e.target
+    onDragLeave()
 
     if (files?.length === 0) {
       alert("Please first choose or drop any file(s)...");
       return;
     }
-    
+
     let uploadContainer = document.getElementById("upload-container")
     uploadContainer.style.minHeight = "unset";
+    refDragArea.current.style.height = "135px";
+    uploadContainer.style.paddingTop = "10px";
 
     const img = new Image();
 
@@ -108,8 +117,12 @@ export default function App() {
         copyPicture(img.src),
         {
           pending: 'Resizing',
-          success: 'Resized',
-          error: 'Error Resized'
+          success: `Resized image's copied to a clipboard`,
+          error: 'Error Resized',
+
+        },
+        {
+          position: toast.POSITION.TOP_CENTER
         }
       )
     };
@@ -117,24 +130,46 @@ export default function App() {
 
   }
 
-  const handleChangeDataBefore = (IsDraging = false) => {
-    setIsDraging(IsDraging)
+  const onDragOver = (event) => {
+    event?.preventDefault();
+    const dropArea = refDragArea.current
+    const dragText = refText.current
+    dropArea.classList.add("active");
+    dragText.textContent = "Drop here.";
+    dragText.style.fontSize = "36px";
+    buttonRef.current.style.display = "none";
+    iconRef.current.style.display = "none";
   }
 
-  useEffect(() => {
-    handleChangeDataBefore();
-  }, [])
+  const onDragLeave = (event) => {
+    event?.preventDefault();
+    const dropArea = refDragArea.current
+    const dragText = refText.current
+    dropArea.classList.remove("active");
+    dragText.textContent = "Drop an image here.";
+    dragText.style.fontSize = "18px";
+    buttonRef.current.style.display = "block";
+    iconRef.current.style.display = "block";
+  }
+
+  const onDrop = (event) => {
+    event.preventDefault();
+    uploadFiles({ target: { files: event.dataTransfer?.files } })
+  }
+
+  const browseFile = () => {
+    inputFile.current.click();
+  }
 
   return (
     <div className="App">
       <div className="upload-container" id="upload-container">
-        <div className="input-group">
-          <input className="input" type="file" id="file_upload"
-            onChange={uploadFiles}
-          //  onDragEnter={handleDrag} 
-          //  onDragLeave={handleDragLeave} 
-          />
-          <span className={`text ${IsDraging ? '-draging' : ''}`}>{IsDraging ? "Drop here." : "(or) Drag and Drop files here."}</span>
+        <div className="drag-area" ref={refDragArea} onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop} >
+          <FontAwesomeIcon ref={iconRef} className="icon" icon={faCloudUploadAlt} />
+
+          <span ref={refText} className="text">Drop an image here.</span>
+          <button ref={buttonRef} className="upload-btn" onClick={browseFile}>or select an image to upload. </button>
+          <input ref={inputFile} type="file" hidden onChange={uploadFiles} />
         </div>
       </div>
       <br />
